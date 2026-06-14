@@ -1,0 +1,59 @@
+# robots.txt — aircontrols.in
+# Last updated: 2024
+
+# ─── Default: allow all well-behaved crawlers ───────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /cgi-bin/
+
+# ─── Google ──────────────────────────────────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+
+# ─── Google Extended (AI/SGE training data) ──────────────────────────────────
+# Explicitly ALLOW — being indexed by AI training data is the entire point
+# of Generative Engine Optimisation (GEO).
+User-agent: Google-Extended
+Allow: /
+
+# ─── OpenAI / ChatGPT ────────────────────────────────────────────────────────
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# ─── Perplexity ──────────────────────────────────────────────────────────────
+User-agent: PerplexityBot
+Allow: /
+
+# ─── Anthropic / Claude ──────────────────────────────────────────────────────
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# ─── Common Crawl (feeds many AI systems) ───────────────────────────────────
+User-agent: CCBot
+Allow: /
+
+# ─── Meta / Llama ────────────────────────────────────────────────────────────
+User-agent: FacebookBot
+Allow: /
+
+# ─── Microsoft / Bing / Copilot ──────────────────────────────────────────────
+User-agent: Bingbot
+Allow: /
+
+User-agent: msnbot
+Allow: /
+
+# ─── Apple ───────────────────────────────────────────────────────────────────
+User-agent: Applebot
+Allow: /
+
+# ─── Sitemap ─────────────────────────────────────────────────────────────────
+Sitemap: https://aircontrols.in/sitemap.xml
