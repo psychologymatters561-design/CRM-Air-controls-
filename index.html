@@ -538,9 +538,10 @@
     .scroll-arrow:hover { background: rgba(255,255,255,.2); transform: scale(1.08); }
     .scroll-arrow:disabled { opacity: .3; pointer-events: none; }
 
-    /* Track wrapper — overflow:hidden clips the card edges cleanly
-       without affecting the inner track's own scroll mechanism */
-    .services-track-wrap { position: relative; width: 100%; overflow: hidden; }
+    /* Track wrapper — NO overflow:hidden here; the #services section already
+       clips the outer edge, and double overflow:hidden on the wrapper can
+       suppress scroll event propagation in older Chrome/Safari builds */
+    .services-track-wrap { position: relative; width: 100%; }
 
     /* Edge fade hints */
     .services-track-wrap::before,
@@ -1048,8 +1049,7 @@
       .scroll-arrows { display: none; }
     }
 
-    /* One-shot scroll-hint nudge: plays once, 1s after page load,
-       bumps the track left by 40px and eases back — shows there's more */
+    /* One-shot scroll-hint nudge on mobile */
     @keyframes swipeHint {
       0%   { transform: translateX(0);    }
       35%  { transform: translateX(-44px);}
@@ -1060,6 +1060,29 @@
       .services-track {
         animation: swipeHint 1s cubic-bezier(.36,.07,.19,.97) 1.1s both;
       }
+    }
+
+    /* Mobile swipe hint label — fades out once track is scrolled (via JS class) */
+    .swipe-hint {
+      display: none;
+      text-align: center;
+      color: rgba(255,255,255,.45);
+      font-size: .75rem;
+      letter-spacing: .5px;
+      padding: 0 0 8px;
+      transition: opacity .4s;
+    }
+    .swipe-hint.gone { opacity: 0; pointer-events: none; }
+    @media (max-width: 640px) {
+      .swipe-hint { display: block; }
+    }
+
+    /* Failure grid mobile — cards stack full-width, zero overflow-x */
+    @media (max-width: 480px) {
+      .fail-card { border-radius: 10px; }
+      .fail-chain { padding: 12px 16px; }
+      .fail-top   { padding: 16px 16px 12px; }
+      .chain-step { font-size: .78rem; }
     }
   </style>
 </head>
@@ -1208,6 +1231,8 @@
 
     </div>
   </div>
+  <!-- Mobile swipe hint — hidden by JS after first scroll -->
+  <p class="swipe-hint" id="swipeHint">← swipe to explore →</p>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -1773,15 +1798,24 @@
   /* ──────────────────────────────────────────────
      SERVICES HORIZONTAL SCROLL
   ────────────────────────────────────────────── */
-  const track    = document.getElementById('servicesTrack');
-  const prevBtn  = document.getElementById('scrollPrev');
-  const nextBtn  = document.getElementById('scrollNext');
-  const STEP     = 320;
+  const track     = document.getElementById('servicesTrack');
+  const prevBtn   = document.getElementById('scrollPrev');
+  const nextBtn   = document.getElementById('scrollNext');
+  const swipeHint = document.getElementById('swipeHint');
+  const STEP      = 320;
 
   function updateArrows() {
     if (!track) return;
     prevBtn.disabled = track.scrollLeft <= 2;
     nextBtn.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+  }
+
+  function onTrackScroll() {
+    updateArrows();
+    // Dismiss swipe hint after first scroll interaction
+    if (swipeHint && track.scrollLeft > 10) {
+      swipeHint.classList.add('gone');
+    }
   }
 
   nextBtn?.addEventListener('click', () => {
@@ -1791,7 +1825,7 @@
     track.scrollBy({ left: -STEP, behavior: 'smooth' });
   });
 
-  track?.addEventListener('scroll', updateArrows, { passive: true });
+  track?.addEventListener('scroll', onTrackScroll, { passive: true });
   window.addEventListener('resize', updateArrows);
   updateArrows();
 
